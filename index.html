@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEATHER_INFOR</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif; 
+            margin: 0;
+            padding: 0;
+
+        }
+        .container{
+            background-color: rgb(42, 182, 224);
+            text-align: center;
+            max-width: 500px;
+            border: 5px solid black ;
+            border-radius: 10px;
+            padding: 10px; 
+            margin: 50px auto;
+
+        }
+        input{
+            border: 2px solid black ;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button{
+            background-color: blueviolet;
+            cursor: pointer;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button:hover{
+            background-color: aqua;
+        }
+        #weather-info {
+            margin-top: 20px;
+        }
+    footer {
+     
+      color: rgb(12, 11, 11);
+      margin: auto;
+      font-style: italic;
+      font-weight: bolder;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>weather-data</h2>
+        <input id="city" type="text" placeholder="Enter city name">
+        <br>
+        <br>
+        <button id="search">Search</button>
+        <div id="weather_info"></div>
+        <footer>Created by khulekani Cebekhulu</footer>
+
+    </div>
+
+     <script>
+       document.getElementById('search').addEventListener('click', function(){
+       const city = document.getElementById('city').value
+       const apiKey = '4edc202e3c13612ba8da03e03e535c34';
+       const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+       fetch(url)
+             .then(response => {
+                if(!response.ok){
+                    throw new Error('network response was not ok');
+                    if(response.status === 404){
+                      document.getElementById('weather_info').innerHTML = '<p>Data not found</p>';
+                    }
+                    else if(response.status === 500){
+                        document.getElementById('weather_info').innerHTML = '<p>Server error</p>';
+
+                    }
+                    else{
+                        document.getElementById('weather_info').innerHTML = '<p>Network response was not ok</p>';
+                    }
+                }
+              return response.json(); 
+             })
+             .then(data => {
+                console.log(data);
+                const weatherDiv = document.getElementById('weather_info');
+                    if (data.cod === 200) {
+                        const weatherData = `
+                            <h2>${data.name}</h2>
+                            <p>${data.weather[0].description}</p>
+                            <p>Temperature: ${data.main.temp}°C</p>
+                            <p>Humidity: ${data.main.humidity}%</p>
+                            <p>Wind Speed: ${data.wind.speed} m/s</p>
+                        `;
+                        weatherDiv.innerHTML = weatherData;
+                    } else {
+                        weatherDiv.innerHTML = `<p>${data.message}</p>`;
+                    }
+             })
+             .catch(error => {
+                console.error('Error:',error);
+                document.getElementById('weather_info').innerHTML = '<p>Error fetching the weather data</p>';
+             });
+
+        });
+       
+    </script>
+</body>
+</html>
